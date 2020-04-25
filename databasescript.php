@@ -86,7 +86,7 @@ class objDatabaseConnection {
 
         //$this->openConnection();
 
-        header("Location: index.php");
+        header("Location: test.php");
         exit();
 
 
