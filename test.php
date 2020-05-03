@@ -9,7 +9,7 @@ $testName = 'readcomptest';
 
 if(isset($_GET['test'])) {
     $test = $_GET['test'];
-    $testData = $DB->readData('SELECT * FROM test WHERE name = "' . $test . '"');
+    $testData = $DB->readData('SELECT * FROM test WHERE name = "' . $test . '" AND delete_date IS NULL');
     $testName = $testData[0]['name'];
 }
     /*

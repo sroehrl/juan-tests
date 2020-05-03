@@ -161,9 +161,9 @@
                 <?php
                 foreach ($availableTests as $test) {
                     echo "<tr>";
-                    echo "<td><a href='index.php?test={$test['name']}'>{$test['name']}</a></td>";
+                    echo "<td><a href='test.php?test={$test['name']}'>{$test['name']}</a></td>";
                     echo "<td>";
-                    echo "<a class='btn' style='margin-right: 6px' href='index.php?test={$test['name']}'>go to test</a>";
+                    echo "<a class='btn' style='margin-right: 6px' href='test.php?test={$test['name']}'>go to test</a>";
                     echo "<a class='btn btn-primary' style='margin-right: 6px' href='administrator.php?action=edit&id={$test['id']}'>edit</a>";
                     echo "<a class='btn btn-error' href='administrator.php?action=delete&id={$test['id']}'>delete</a>";
                     echo "</td>";
@@ -176,7 +176,7 @@
                         <form method="get">
                             <input type="hidden" name="action" value="new_test">
                             <div class="form-group">
-                                <input type="text" name="new_test_name" class="form-input">
+                                <input type="text" name="new_test_name" required minlength="3" class="form-input">
                             </div>
                             <div>
                                 <input type="submit" class="btn bt-success" value="create new test">
