@@ -123,6 +123,7 @@
                         $connection->query('UPDATE test SET  name = "' . $_POST['name'] . '" WHERE id =' . (int)$_POST['id']);
                         // update all questions
                         foreach ($_POST as $key => $value) {
+
                             // question?
                             if (strpos($key, 'question_id-') !== false) {
                                 // 'question_id-1
@@ -134,12 +135,11 @@
                             if (strpos($key, 'choice_choice-') !== false) {
                                 // choice value or choice correct?
                                 $choiceId = substr($key, strlen('choice_choice-'));
-                                $isCorrect = isset($_POST['choice_correct-'.$choiceId]);
+                                $isCorrect = (int) isset($_POST['choice_correct-'.$choiceId]);
+
 
                                 $connection->query('UPDATE choice SET choice = "' . $value .'", is_correct = '.$isCorrect.' WHERE id = ' . $choiceId);
                             }
-
-
                         }
 
                         break;
