@@ -27,7 +27,7 @@ $availableTests = $DB->readData('SELECT name FROM test WHERE delete_date IS NULL
     <div class="columns">
         <?php require 'navigation.php' ?>
         <div class="column">
-            <h1>Please choose a test</h1>
+            <h1><?= $_SESSION['logged_in'] ? 'Hello, ' .$_SESSION['user']['userName'] .'! ' : '' ?>Please choose a test</h1>
             <ul>
                 <?php
                 if($_SESSION['logged_in']){
