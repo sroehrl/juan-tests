@@ -1,5 +1,6 @@
 <?php
 require 'databasescript.php';
+session_start();
 $DB = new objDatabaseConnection();
 
 $connection = $DB->openConnection();
@@ -45,7 +46,7 @@ foreach ($questionData as $questionDatum) {
 <body>
 <div class="container">
     <div class="columns">
-        <?php include 'navigation.html' ?>
+        <?php include 'navigation.php' ?>
         <div class="column">
             <?php
 

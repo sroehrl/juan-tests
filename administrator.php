@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +24,7 @@
 <div class="container">
     <div class="columns">
         <div class="column col-3">
-            <?php include 'navigation.html' ?>
+            <?php include 'navigation.php' ?>
         </div>
         <div class="column">
 
@@ -29,6 +32,9 @@
             <?php
             ini_set('error_reporting',E_ALL);
             ini_set('display_errors', true);
+            if(!$_SESSION['logged_in'] || !$_SESSION['user']['is_admin']){
+                header('Location: index.php');
+            }
 
             /*
              * PART 1: Maintain tests

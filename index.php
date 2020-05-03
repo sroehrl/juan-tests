@@ -1,4 +1,8 @@
 <?php
+session_start();
+if(!isset($_SESSION['logged_in'])){
+    $_SESSION['logged_in'] = false;
+}
 require 'databasescript.php';
 $DB = new objDatabaseConnection();
 
@@ -21,14 +25,19 @@ $availableTests = $DB->readData('SELECT name FROM test WHERE delete_date IS NULL
 
 <div class="container">
     <div class="columns">
-        <?php include 'navigation.html' ?>
+        <?php require 'navigation.php' ?>
         <div class="column">
             <h1>Please choose a test</h1>
             <ul>
                 <?php
-                foreach ($availableTests as $test) {
-                    echo "<li><a class='btn' href='test.php?test={$test['name']}'>{$test['name']}</a></li>";
+                if($_SESSION['logged_in']){
+                    foreach ($availableTests as $test) {
+                        echo "<li><a class='btn' href='test.php?test={$test['name']}'>{$test['name']}</a></li>";
+                    }
+                } else {
+                    echo "<li><a class='btn' href='login.php'>Please log in first</a></li>";
                 }
+
 
                 ?>
             </ul>
