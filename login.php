@@ -1,6 +1,9 @@
 <?php
+session_start();
 require 'databasescript.php';
 $DB = new objDatabaseConnection();
+ini_set('error_reporting',E_ALL);
+ini_set('display_errors', true);
 
 $connection = $DB->openConnection();
 ?>
@@ -8,7 +11,7 @@ $connection = $DB->openConnection();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><?= $testName ?></title>
+    <title>LOGIN</title>
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
@@ -25,6 +28,7 @@ $connection = $DB->openConnection();
                 if($connection->insert_id){
                     $_SESSION['logged_in'] = true;
                     $_SESSION['user'] = $_POST;
+                    $_SESSION['user']['is_admin'] = false;
                     $_SESSION['user']['id'] = $connection->insert_id;
                     header('Location: index.php');
                 }

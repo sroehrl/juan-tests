@@ -18,6 +18,13 @@
             </li>
             <?php
         }
+        if($_SESSION['logged_in']){
+            ?>
+            <li class="nav-item">
+                <a href="logout.php">Log out</a>
+            </li>
+            <?php
+        }
         ?>
 
     </ul>
