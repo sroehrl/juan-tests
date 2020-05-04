@@ -124,8 +124,9 @@ session_start();
                         $connection->query('INSERT INTO choice SET choice = "answer", question_id =' . (int)$_GET['question_id']);
                         editView();
                         break;
-                    case 'add_assignment':
-                        $connection->query('INSERT INTO assignment SET user_id = '. $_POST['user'] .', test_id = '. $_POST['test']);
+                    case 'new_assignment':
+                        $connection->query('INSERT INTO assignment SET user_id = '. (int)$_GET['user'] .', test_id = '. (int)$_GET['test']);
+                        break;
                     case 'update':
                         // update test
                         $connection->query('UPDATE test SET  name = "' . $_POST['name'] . '" WHERE id =' . (int)$_POST['id']);
@@ -221,8 +222,8 @@ session_start();
 
             }
             ?>
-            <form method="post">
-                <input type="hidden" name="action" value="new_assigment">
+            <form method="get">
+                <input type="hidden" name="action" value="new_assignment">
                 <div class="columns">
                     <div class="column">
                         <div class="form-group">
