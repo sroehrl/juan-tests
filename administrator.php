@@ -124,6 +124,8 @@ session_start();
                         $connection->query('INSERT INTO choice SET choice = "answer", question_id =' . (int)$_GET['question_id']);
                         editView();
                         break;
+                    case 'add_assignment':
+                        $connection->query('INSERT INTO assignment SET user_id = '. $_POST['user'] .', test_id = '. $_POST['test']);
                     case 'update':
                         // update test
                         $connection->query('UPDATE test SET  name = "' . $_POST['name'] . '" WHERE id =' . (int)$_POST['id']);
@@ -159,6 +161,7 @@ session_start();
 
             $availableTests = $DB->readData('SELECT * FROM test WHERE delete_date IS NULL');
             ?>
+            <h3>Tests</h3>
             <table class="table">
                 <tr>
                     <td>Test name</td>
@@ -192,13 +195,64 @@ session_start();
                 </tr>
             </table>
 
-
+            <h3>Students</h3>
             <?php
             /*
              * PART 2: Analysing test results & administer
              */
-            ?>
+            $allUsers = $DB->readData('SELECT id, userName, is_admin FROM user WHERE id != ' . $_SESSION['user']['id']);
+            foreach($allUsers as $i => $user){
+                $allUsers[$i]['assignments'] = $DB->readData('SELECT assignment.*, test.name as test_name FROM assignment JOIN test ON test.id = assignment.test_id WHERE user_id = '. $user['id']);
+                foreach ($allUsers[$i]['assignments'] as $assignment){
+                    ?>
+                    <div class="columns" style="padding: 4px; border: 1px solid gray; margin: 3px 0; ">
+                        <div class="column">
+                            <?= $user['userName'] ?>
+                        </div>
+                        <div class="column">
+                            <?= $assignment['test_name'] ?>
+                        </div>
+                        <div class="column">
+                            <?= $assignment['completion_date'] ? date_format($assignment['completion_date'], 'm/d/Y') : 'incomplete' ?>
+                        </div>
+                    </div>
+                    <?php
+                }
 
+            }
+            ?>
+            <form method="post">
+                <input type="hidden" name="action" value="new_assigment">
+                <div class="columns">
+                    <div class="column">
+                        <div class="form-group">
+                            <label for="user">Student</label>
+                            <select name="user" id="user" required class="form-input">
+                                <?php
+                                foreach ($allUsers as $user){
+                                    echo '<option value="' . $user['id'] . '">'. $user['userName'] . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="form-group">
+                            <label for="test">Test</label>
+                            <select name="test" id="test" required class="form-input">
+                                <?php
+                                foreach ($availableTests as $test){
+                                    echo '<option value="' . $test['id'] . '">'. $test['name'] . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <input type="submit" class="btn bt-success" value="create new assignment">
+                </div>
+            </form>
 
         </div>
     </div>

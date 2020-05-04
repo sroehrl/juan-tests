@@ -53,3 +53,11 @@ create table if not exists user
     password varchar(255) null
 );
 
+create table if not exists assignment
+(
+    id       int auto_increment
+        primary key,
+    user_id int(11) not null,
+    test_id int(11) not null,
+    completion_date datetime
+);
