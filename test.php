@@ -1,6 +1,12 @@
 <?php
-require 'databasescript.php';
 session_start();
+require 'databasescript.php';
+if(!$_SESSION['logged_in']){
+    header('Location: index.php');
+}
+
+$user = $_SESSION['user'];
+
 $DB = new objDatabaseConnection();
 
 $connection = $DB->openConnection();
@@ -8,9 +14,21 @@ $connection = $DB->openConnection();
 $testName = 'readcomptest';
 
 
+
 if (isset($_GET['test'])) {
     $test = $_GET['test'];
-    $testData = $DB->readData('SELECT * FROM test WHERE name = "' . $test . '" AND delete_date IS NULL');
+
+    // either you are admin, or assigned
+    if($user['is_admin']){
+        $testData = $DB->readData('SELECT * FROM test WHERE name = "' . $test . '" AND delete_date IS NULL');
+    } else {
+        $testData = $DB->readData('SELECT test.*, a.id as assignment_id FROM test JOIN assignment a on test.id = a.test_id AND a.user_id = '. $user['id'].' WHERE test.name = "' . $test . '" AND test.delete_date IS NULL');
+        if(empty($testData)){
+            header('Location: index.php');
+        }
+    }
+
+
     $testName = $testData[0]['name'];
 }
 /*
@@ -54,8 +72,9 @@ foreach ($questionData as $questionDatum) {
             if (isset($_POST['submission'])) {
                 // '1-1' => string 'on'
                 // insert into database
-                $userId = 1; // $_SESSION['user_id'];
+                $userId =  $_SESSION['user']['id'];
                 $testID = $testData[0]['id'];
+                $assignmentId = $testData[0]['assignment_id'];
                 $connection->query('INSERT INTO result SET test_id = ' . $testID . ', user_id = ' . $userId);
                 $newResultId = $connection->insert_id;
 
@@ -80,6 +99,11 @@ foreach ($questionData as $questionDatum) {
                 }
 
                 $score = $correctAnswers / $totalQuestions * 100;
+
+                // set assignment as complete
+
+                $connection->query('UPDATE assignment SET completion_date = NOW(), score = '.round($score).' result_id = ' . $newResultId . '  WHERE id = '. $assignmentId);
+
 
                 echo '<h1>YOUR SCORE: ' . $score . '% </h1>';
 

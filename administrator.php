@@ -126,6 +126,11 @@ session_start();
                         break;
                     case 'new_assignment':
                         $connection->query('INSERT INTO assignment SET user_id = '. (int)$_GET['user'] .', test_id = '. (int)$_GET['test']);
+                        header('Location: administrator.php');
+                        break;
+                    case 'delete_assignment':
+                        $connection->query('DELETE FROM assignment WHERE id = '. (int)$_GET['assignment_id'] );
+                        header('Location: administrator.php');
                         break;
                     case 'update':
                         // update test
@@ -197,6 +202,7 @@ session_start();
             </table>
 
             <h3>Students</h3>
+            <h3>Existing assignments</h3>
             <?php
             /*
              * PART 2: Analysing test results & administer
@@ -206,6 +212,13 @@ session_start();
                 $allUsers[$i]['assignments'] = $DB->readData('SELECT assignment.*, test.name as test_name FROM assignment JOIN test ON test.id = assignment.test_id WHERE user_id = '. $user['id']);
                 foreach ($allUsers[$i]['assignments'] as $assignment){
                     ?>
+                    <div class="columns" style="font-weight: bolder">
+                        <div class="column">Student</div>
+                        <div class="column">Test</div>
+                        <div class="column">Completed</div>
+                        <div class="column">Score</div>
+                        <div class="column">Actions</div>
+                    </div>
                     <div class="columns" style="padding: 4px; border: 1px solid gray; margin: 3px 0; ">
                         <div class="column">
                             <?= $user['userName'] ?>
@@ -214,7 +227,15 @@ session_start();
                             <?= $assignment['test_name'] ?>
                         </div>
                         <div class="column">
-                            <?= $assignment['completion_date'] ? date_format($assignment['completion_date'], 'm/d/Y') : 'incomplete' ?>
+                            <?= $assignment['completion_date'] ? date( 'm/d/Y', strtotime($assignment['completion_date'])) : 'incomplete' ?>
+                        </div>
+                        <div class="column">
+                            <?= $assignment['score']  ?>
+                        </div>
+                        <div class="column ">
+                            <a href="?action=delete_assignment&assignment_id=<?=$assignment['id'] ?>" class="btn btn-error">
+                                delete assignment
+                            </a>
                         </div>
                     </div>
                     <?php
@@ -222,6 +243,7 @@ session_start();
 
             }
             ?>
+            <h3>Create new assignment</h3>
             <form method="get">
                 <input type="hidden" name="action" value="new_assignment">
                 <div class="columns">

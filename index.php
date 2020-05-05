@@ -8,7 +8,12 @@ $DB = new objDatabaseConnection();
 
 $connection = $DB->openConnection();
 
-$availableTests = $DB->readData('SELECT name FROM test WHERE delete_date IS NULL');
+$availableTests = [];
+if($_SESSION['logged_in']){
+    $availableTests = $DB->readData('SELECT t.name, a.* FROM test t JOIN assignment a on t.id = a.test_id AND a.user_id = '.$_SESSION['user']['id'].' WHERE t.delete_date IS NULL');
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +24,7 @@ $availableTests = $DB->readData('SELECT name FROM test WHERE delete_date IS NULL
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -28,11 +34,16 @@ $availableTests = $DB->readData('SELECT name FROM test WHERE delete_date IS NULL
         <?php require 'navigation.php' ?>
         <div class="column">
             <h1><?= $_SESSION['logged_in'] ? 'Hello, ' .$_SESSION['user']['userName'] .'! ' : '' ?>Please choose a test</h1>
-            <ul>
+            <ul class="no-list-style">
                 <?php
                 if($_SESSION['logged_in']){
                     foreach ($availableTests as $test) {
-                        echo "<li><a class='btn' href='test.php?test={$test['name']}'>{$test['name']}</a></li>";
+                        if($test['completion_date']){
+                            echo "<li>{$test['name']} completed ".date( 'm/d/Y', strtotime($test['completion_date']))."</li>";
+                        } else {
+                            echo "<li><a class='btn' href='test.php?test={$test['name']}'>{$test['name']}</a></li>";
+                        }
+
                     }
                 } else {
                     echo "<li><a class='btn' href='login.php'>Please log in first</a></li>";

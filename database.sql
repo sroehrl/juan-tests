@@ -1,3 +1,7 @@
+create database if not exists readcomptest;
+
+use readcomptest;
+
 create table if not exists choice
 (
     id          int auto_increment
@@ -59,5 +63,6 @@ create table if not exists assignment
         primary key,
     user_id int(11) not null,
     test_id int(11) not null,
+    result_id int(11) null,
     completion_date datetime
 );
