@@ -21,7 +21,7 @@ $connection = $DB->openConnection();
     <?php
         if(isset($_POST['userName'])){
 
-            if($_POST['signup']){
+            if(isset($_POST['signup']) && $_POST['signup']){
                 // new user
                 $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 $connection->query('INSERT INTO user SET userName = "' . $_POST['userName'] .'", password = "'. $password .'"');

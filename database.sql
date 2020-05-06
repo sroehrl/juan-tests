@@ -64,5 +64,6 @@ create table if not exists assignment
     user_id int(11) not null,
     test_id int(11) not null,
     result_id int(11) null,
+    score int(11) null,
     completion_date datetime
 );

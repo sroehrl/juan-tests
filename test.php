@@ -102,7 +102,7 @@ foreach ($questionData as $questionDatum) {
 
                 // set assignment as complete
 
-                $connection->query('UPDATE assignment SET completion_date = NOW(), score = '.round($score).' result_id = ' . $newResultId . '  WHERE id = '. $assignmentId);
+                $connection->query('UPDATE assignment SET completion_date = NOW(), score = '.round($score).', result_id = ' . $newResultId . '  WHERE id = '. $assignmentId);
 
 
                 echo '<h1>YOUR SCORE: ' . $score . '% </h1>';

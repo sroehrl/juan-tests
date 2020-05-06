@@ -23,16 +23,14 @@ session_start();
 </style>
 <div class="container">
     <div class="columns">
-        <div class="column col-3">
-            <?php include 'navigation.php' ?>
-        </div>
+        <?php include 'navigation.php' ?>
         <div class="column">
 
 
             <?php
-            ini_set('error_reporting',E_ALL);
+            ini_set('error_reporting', E_ALL);
             ini_set('display_errors', true);
-            if(!$_SESSION['logged_in'] || !$_SESSION['user']['is_admin']){
+            if (!$_SESSION['logged_in'] || !$_SESSION['user']['is_admin']) {
                 header('Location: index.php');
             }
 
@@ -125,11 +123,11 @@ session_start();
                         editView();
                         break;
                     case 'new_assignment':
-                        $connection->query('INSERT INTO assignment SET user_id = '. (int)$_GET['user'] .', test_id = '. (int)$_GET['test']);
+                        $connection->query('INSERT INTO assignment SET user_id = ' . (int)$_GET['user'] . ', test_id = ' . (int)$_GET['test']);
                         header('Location: administrator.php');
                         break;
                     case 'delete_assignment':
-                        $connection->query('DELETE FROM assignment WHERE id = '. (int)$_GET['assignment_id'] );
+                        $connection->query('DELETE FROM assignment WHERE id = ' . (int)$_GET['assignment_id']);
                         header('Location: administrator.php');
                         break;
                     case 'update':
@@ -143,16 +141,16 @@ session_start();
                                 // 'question_id-1
                                 $questionId = substr($key, strlen('question_id-'));
 
-                                $connection->query('UPDATE question SET question = "' . $value .'" WHERE id = ' . $questionId);
+                                $connection->query('UPDATE question SET question = "' . $value . '" WHERE id = ' . $questionId);
                             }
                             // choice?
                             if (strpos($key, 'choice_choice-') !== false) {
                                 // choice value or choice correct?
                                 $choiceId = substr($key, strlen('choice_choice-'));
-                                $isCorrect = (int) isset($_POST['choice_correct-'.$choiceId]);
+                                $isCorrect = (int)isset($_POST['choice_correct-' . $choiceId]);
 
 
-                                $connection->query('UPDATE choice SET choice = "' . $value .'", is_correct = '.$isCorrect.' WHERE id = ' . $choiceId);
+                                $connection->query('UPDATE choice SET choice = "' . $value . '", is_correct = ' . $isCorrect . ' WHERE id = ' . $choiceId);
                             }
                         }
 
@@ -203,22 +201,24 @@ session_start();
 
             <h3>Students</h3>
             <h3>Existing assignments</h3>
+            <div class="columns" style="font-weight: bolder">
+                <div class="column">Student</div>
+                <div class="column">Test</div>
+                <div class="column">Completed</div>
+                <div class="column">Score</div>
+                <div class="column">Actions</div>
+            </div>
             <?php
             /*
              * PART 2: Analysing test results & administer
              */
             $allUsers = $DB->readData('SELECT id, userName, is_admin FROM user WHERE id != ' . $_SESSION['user']['id']);
-            foreach($allUsers as $i => $user){
-                $allUsers[$i]['assignments'] = $DB->readData('SELECT assignment.*, test.name as test_name FROM assignment JOIN test ON test.id = assignment.test_id WHERE user_id = '. $user['id']);
-                foreach ($allUsers[$i]['assignments'] as $assignment){
+            foreach ($allUsers as $i => $user) {
+                $allUsers[$i]['assignments'] = $DB->readData('SELECT assignment.*, test.name as test_name FROM assignment JOIN test ON test.id = assignment.test_id WHERE user_id = ' . $user['id']);
+
+                foreach ($allUsers[$i]['assignments'] as $assignment) {
                     ?>
-                    <div class="columns" style="font-weight: bolder">
-                        <div class="column">Student</div>
-                        <div class="column">Test</div>
-                        <div class="column">Completed</div>
-                        <div class="column">Score</div>
-                        <div class="column">Actions</div>
-                    </div>
+
                     <div class="columns" style="padding: 4px; border: 1px solid gray; margin: 3px 0; ">
                         <div class="column">
                             <?= $user['userName'] ?>
@@ -227,13 +227,14 @@ session_start();
                             <?= $assignment['test_name'] ?>
                         </div>
                         <div class="column">
-                            <?= $assignment['completion_date'] ? date( 'm/d/Y', strtotime($assignment['completion_date'])) : 'incomplete' ?>
+                            <?= $assignment['completion_date'] ? date('m/d/Y', strtotime($assignment['completion_date'])) : 'incomplete' ?>
                         </div>
                         <div class="column">
-                            <?= $assignment['score']  ?>
+                            <?= $assignment['score'] ?>
                         </div>
                         <div class="column ">
-                            <a href="?action=delete_assignment&assignment_id=<?=$assignment['id'] ?>" class="btn btn-error">
+                            <a href="?action=delete_assignment&assignment_id=<?= $assignment['id'] ?>"
+                               class="btn btn-error">
                                 delete assignment
                             </a>
                         </div>
@@ -244,38 +245,45 @@ session_start();
             }
             ?>
             <h3>Create new assignment</h3>
-            <form method="get">
-                <input type="hidden" name="action" value="new_assignment">
-                <div class="columns">
-                    <div class="column">
-                        <div class="form-group">
-                            <label for="user">Student</label>
-                            <select name="user" id="user" required class="form-input">
-                                <?php
-                                foreach ($allUsers as $user){
-                                    echo '<option value="' . $user['id'] . '">'. $user['userName'] . '</option>';
-                                }
-                                ?>
-                            </select>
+            <div class="card">
+                <form method="get" class="card-body" style="border: 1px solid rgba(0,0,0,.6)">
+                    <input type="hidden" name="action" value="new_assignment">
+                    <div class="columns">
+                        <div class="column">
+                            <div class="form-group">
+                                <label for="user">Student</label>
+                                <select name="user" id="user" required class="form-input">
+                                    <option disabled selected>please choose student</option>
+                                    <?php
+                                    foreach ($allUsers as $user) {
+                                        echo '<option value="' . $user['id'] . '">' . $user['userName'] . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="form-group">
+                                <label for="test">Test</label>
+                                <select name="test" id="test" required class="form-input">
+                                    <option disabled selected>please choose test</option>
+                                    <?php
+                                    foreach ($availableTests as $test) {
+                                        echo '<option value="' . $test['id'] . '">' . $test['name'] . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="form-group" style="margin-top: 24px">
+                                <input type="submit" class="btn bt-success" id="sub" value="create new assignment">
+                            </div>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="form-group">
-                            <label for="test">Test</label>
-                            <select name="test" id="test" required class="form-input">
-                                <?php
-                                foreach ($availableTests as $test){
-                                    echo '<option value="' . $test['id'] . '">'. $test['name'] . '</option>';
-                                }
-                                ?>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <input type="submit" class="btn bt-success" value="create new assignment">
-                </div>
-            </form>
+                </form>
+            </div>
+
 
         </div>
     </div>
