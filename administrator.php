@@ -54,9 +54,9 @@ session_start();
                 global $DB;
                 $test = $DB->readData('SELECT * FROM test WHERE id =' . $id);
                 $test = $test[0];
-                $test['questions'] = $DB->readData('SELECT * FROM question WHERE test_id = ' . $id);
+                $test['questions'] = $DB->readData('SELECT * FROM question WHERE delete_date IS NULL AND test_id = ' . $id);
                 foreach ($test['questions'] as $i => $question) {
-                    $test['questions'][$i]['choices'] = $DB->readData('SELECT * FROM choice WHERE question_id = ' . $question['id']);
+                    $test['questions'][$i]['choices'] = $DB->readData('SELECT * FROM choice WHERE delete_date IS NULL AND question_id = ' . $question['id']);
                 }
                 return $test;
             }
