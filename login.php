@@ -38,7 +38,12 @@ $connection = $DB->openConnection();
                 if(!empty($user) && password_verify($_POST['password'], $user[0]['password'])){
                     $_SESSION['logged_in'] = true;
                     $_SESSION['user'] = $user[0];
-                    header('Location: index.php');
+                    if($user[0]['is_admin']){
+                        header('Location: administrator.php');
+                    } else {
+                        header('Location: index.php');
+                    }
+
                 }
             }
             echo '<h3>Error: credentials not valid or userName not unique</h3>';

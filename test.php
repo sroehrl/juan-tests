@@ -22,7 +22,11 @@ if (isset($_GET['test'])) {
     if($user['is_admin']){
         $testData = $DB->readData('SELECT * FROM test WHERE name = "' . $test . '" AND delete_date IS NULL');
     } else {
-        $testData = $DB->readData('SELECT test.*, a.id as assignment_id FROM test JOIN assignment a on test.id = a.test_id AND a.user_id = '. $user['id'].' WHERE test.name = "' . $test . '" AND test.delete_date IS NULL');
+        $testData = $DB->readData('
+            SELECT test.*, a.id as assignment_id 
+            FROM test JOIN assignment a on test.id = a.test_id AND a.user_id = '. $user['id'].' 
+            WHERE test.name = "' . $test . '" AND test.delete_date IS NULL ORDER BY a.id DESC LIMIT 1
+            ');
         if(empty($testData)){
             header('Location: index.php');
         }
@@ -37,12 +41,12 @@ if (isset($_GET['test'])) {
  * ]
  * */
 
-$questionData = $DB->readData('SELECT * FROM question WHERE test_id = "' . $testData[0]['id'] . '"');
+$questionData = $DB->readData('SELECT * FROM question WHERE delete_date IS NULL AND test_id = "' . $testData[0]['id'] . '"');
 $testQuestions = [];
 foreach ($questionData as $questionDatum) {
     $testQuestions[] = [
         'question' => $questionDatum,
-        'choices' => $DB->readData('SELECT * FROM choice WHERE question_id = ' . $questionDatum['id'])
+        'choices' => $DB->readData('SELECT * FROM choice WHERE delete_date IS NULL AND question_id = ' . $questionDatum['id'])
     ];
 }
 /*
@@ -106,6 +110,7 @@ foreach ($questionData as $questionDatum) {
 
 
                 echo '<h1>YOUR SCORE: ' . $score . '% </h1>';
+                echo '<a href="index.php" class="btn">return home</a>';
 
 
                 // evaluate results
