@@ -1,6 +1,6 @@
-create database if not exists readcomptest;
+/*create database if not exists readcomptest;
 
-use readcomptest;
+use readcomptest;*/
 
 create table if not exists choice
 (
@@ -53,8 +53,9 @@ create table if not exists user
 (
     id       int auto_increment
         primary key,
-    userName varchar(200) null,
-    password varchar(255) null
+    userName varchar(200) unique null,
+    password varchar(255) null,
+    is_admin tinyint
 );
 
 create table if not exists assignment

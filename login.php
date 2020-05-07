@@ -26,11 +26,11 @@ $connection = $DB->openConnection();
                 $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 $connection->query('INSERT INTO user SET userName = "' . $_POST['userName'] .'", password = "'. $password .'"');
                 if($connection->insert_id){
-                    $_SESSION['logged_in'] = true;
+                   /* $_SESSION['logged_in'] = true;
                     $_SESSION['user'] = $_POST;
                     $_SESSION['user']['is_admin'] = false;
-                    $_SESSION['user']['id'] = $connection->insert_id;
-                    header('Location: index.php');
+                    $_SESSION['user']['id'] = $connection->insert_id;*/
+                    header('Location: administrator.php');
                 }
             } else {
                 // known user
@@ -61,11 +61,8 @@ $connection = $DB->openConnection();
             <label class="form-label" for="password">Password</label>
             <input class="form-input" name="password" required minlength="6" type="password" id="password">
         </div>
-        <div class="form-group">
-            <label>
-                <input type="checkbox" name="signup">
-                I am a new user
-            </label>
+        <div>
+            <p>Please reach out to an administrator to create a new account</p>
         </div>
         <div>
             <button class="btn btn-success" type="submit">LOGIN</button>

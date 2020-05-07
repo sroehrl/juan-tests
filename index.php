@@ -34,7 +34,7 @@ if($_SESSION['logged_in']){
     <div class="columns">
         <?php require 'navigation.php' ?>
         <div class="column">
-            <h1><?= $_SESSION['logged_in'] ? 'Hello, ' .$_SESSION['user']['userName'] .'! ' : '' ?></h1>
+            <h1><?= $_SESSION['logged_in'] ? 'Welcome, ' .$_SESSION['user']['userName'] .'! ' : '' ?></h1>
             <ul class="no-list-style">
                 <?php
                 $greeting = '';

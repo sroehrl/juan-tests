@@ -165,8 +165,8 @@ session_start();
 
             $availableTests = $DB->readData('SELECT * FROM test WHERE delete_date IS NULL');
             ?>
-            <h3>Tests</h3>
-            <table class="table">
+            <h3>Tests <button class="btn btn-sm expand-me" data-toggle="test-view">expand</button></h3>
+            <table class="table" id="test-view" style="display: none">
                 <tr>
                     <td>Test name</td>
                     <td>actions</td>
@@ -199,53 +199,56 @@ session_start();
                 </tr>
             </table>
 
-            <h3>Students</h3>
-            <h3>Existing assignments</h3>
-            <div class="columns" style="font-weight: bolder">
-                <div class="column">Student</div>
-                <div class="column">Test</div>
-                <div class="column">Completed</div>
-                <div class="column">Score</div>
-                <div class="column">Actions</div>
-            </div>
-            <?php
-            /*
-             * PART 2: Analysing test results & administer
-             */
-            $allUsers = $DB->readData('SELECT id, userName, is_admin FROM user WHERE id != ' . $_SESSION['user']['id']);
-            foreach ($allUsers as $i => $user) {
-                $allUsers[$i]['assignments'] = $DB->readData('SELECT assignment.*, test.name as test_name FROM assignment JOIN test ON test.id = assignment.test_id WHERE user_id = ' . $user['id']);
+            <h3>Existing assignments <button class="btn btn-sm expand-me" data-toggle="existing-assignment-view">expand</button></h3>
+            <div id="existing-assignment-view" style="display: none">
+                <div class="columns" style="font-weight: bolder">
+                    <div class="column">Student</div>
+                    <div class="column">Test</div>
+                    <div class="column">Completed</div>
+                    <div class="column">Score</div>
+                    <div class="column">Actions</div>
+                </div>
+                <?php
+                /*
+                 * PART 2: Analysing test results & administer
+                 */
+                $allUsers = $DB->readData('SELECT id, userName, is_admin FROM user WHERE id != ' . $_SESSION['user']['id']);
+                foreach ($allUsers as $i => $user) {
+                    $allUsers[$i]['assignments'] = $DB->readData('SELECT assignment.*, test.name as test_name FROM assignment JOIN test ON test.id = assignment.test_id WHERE user_id = ' . $user['id']);
 
-                foreach ($allUsers[$i]['assignments'] as $assignment) {
-                    ?>
+                    foreach ($allUsers[$i]['assignments'] as $assignment) {
+                        ?>
 
-                    <div class="columns" style="padding: 4px; border: 1px solid gray; margin: 3px 0; ">
-                        <div class="column">
-                            <?= $user['userName'] ?>
+                        <div class="columns" style="padding: 4px; border: 1px solid gray; margin: 3px 0; ">
+                            <div class="column">
+                                <?= $user['userName'] ?>
+                            </div>
+                            <div class="column">
+                                <?= $assignment['test_name'] ?>
+                            </div>
+                            <div class="column">
+                                <?= $assignment['completion_date'] ? date('m/d/Y', strtotime($assignment['completion_date'])) : 'incomplete' ?>
+                            </div>
+                            <div class="column">
+                                <?= $assignment['score'] ?>
+                            </div>
+                            <div class="column ">
+                                <a href="?action=delete_assignment&assignment_id=<?= $assignment['id'] ?>"
+                                   class="btn btn-error">
+                                    delete assignment
+                                </a>
+                            </div>
                         </div>
-                        <div class="column">
-                            <?= $assignment['test_name'] ?>
-                        </div>
-                        <div class="column">
-                            <?= $assignment['completion_date'] ? date('m/d/Y', strtotime($assignment['completion_date'])) : 'incomplete' ?>
-                        </div>
-                        <div class="column">
-                            <?= $assignment['score'] ?>
-                        </div>
-                        <div class="column ">
-                            <a href="?action=delete_assignment&assignment_id=<?= $assignment['id'] ?>"
-                               class="btn btn-error">
-                                delete assignment
-                            </a>
-                        </div>
-                    </div>
-                    <?php
+                        <?php
+                    }
+
                 }
+                ?>
+            </div>
 
-            }
-            ?>
-            <h3>Create new assignment</h3>
-            <div class="card">
+
+            <h3>Create new assignment <button class="btn btn-sm expand-me" data-toggle="new-assignment-view">expand</button></h3>
+            <div id="new-assignment-view" style="display: none" class="card">
                 <form method="get" class="card-body" style="border: 1px solid rgba(0,0,0,.6)">
                     <input type="hidden" name="action" value="new_assignment">
                     <div class="columns">
@@ -283,10 +286,40 @@ session_start();
                     </div>
                 </form>
             </div>
-
+            <h3>Students <button class="btn btn-sm expand-me" data-toggle="all-students-view">expand</button></h3>
+            <div style="display: none" id="all-students-view">
+                <?php
+                    foreach ($allUsers as $user){
+                        echo '<p>' . $user['userName'] . '</p>';
+                    }
+                ?>
+            </div>
+            <h3>Create new student <button class="btn btn-sm expand-me" data-toggle="create-new-student-view">expand</button></h3>
+            <form method="post" action="login.php" style="display:none;" id="create-new-student-view">
+                <input type="hidden" name="signup" value="on">
+                <div class="form-group">
+                    <label class="form-label" for="userName">User name</label>
+                    <input class="form-input" name="userName" required minlength="4" type="text" id="userName">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input class="form-input" name="password" required minlength="6" type="password" id="password">
+                </div>
+                <div>
+                    <button class="btn btn-success" type="submit">Create new student</button>
+                </div>
+            </form>
 
         </div>
     </div>
 </div>
+<script>
+    document.querySelectorAll('.expand-me').forEach(element =>{
+        element.addEventListener('click',ev =>{
+            let targetElement = document.getElementById(ev.target.dataset.toggle);
+            targetElement.style.display = targetElement.style.display === 'none' ? 'block' : 'none';
+        })
+    })
+</script>
 </body>
 </html>
