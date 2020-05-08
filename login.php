@@ -30,7 +30,7 @@ $connection = $DB->openConnection();
                     $_SESSION['user'] = $_POST;
                     $_SESSION['user']['is_admin'] = false;
                     $_SESSION['user']['id'] = $connection->insert_id;*/
-                    header('Location: administrator.php');
+                    header('Location: administrator.php#all-students-view');
                 }
             } else {
                 // known user

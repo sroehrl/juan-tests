@@ -124,11 +124,11 @@ session_start();
                         break;
                     case 'new_assignment':
                         $connection->query('INSERT INTO assignment SET user_id = ' . (int)$_GET['user'] . ', test_id = ' . (int)$_GET['test']);
-                        header('Location: administrator.php');
+                        header('Location: administrator.php#existing-assignment-view');
                         break;
                     case 'delete_assignment':
                         $connection->query('DELETE FROM assignment WHERE id = ' . (int)$_GET['assignment_id']);
-                        header('Location: administrator.php');
+                        header('Location: administrator.php#existing-assignment-view');
                         break;
                     case 'update':
                         // update test
@@ -165,8 +165,24 @@ session_start();
 
             $availableTests = $DB->readData('SELECT * FROM test WHERE delete_date IS NULL');
             ?>
-            <h3>Tests <button class="btn btn-sm expand-me" data-toggle="test-view">expand</button></h3>
-            <table class="table" id="test-view" style="display: none">
+            <ul class="tab tab-block" style="margin-bottom: 16px">
+                <li class="tab-item">
+                    <a href="#test-view" class="active" data-toggle="test-view">Test</a>
+                </li>
+                <li class="tab-item">
+                    <a href="#existing-assignment-view" data-toggle="existing-assignment-view">Existing assignments</a>
+                </li>
+                <li class="tab-item">
+                    <a href="#new-assignment-view" data-toggle="new-assignment-view">Create new assignment</a>
+                </li>
+                <li class="tab-item">
+                    <a href="#all-students-view" data-toggle="all-students-view">Students</a>
+                </li>
+                <li class="tab-item">
+                    <a href="#create-new-student-view" data-toggle="create-new-student-view">Create new student</a>
+                </li>
+            </ul>
+            <table class="table" id="test-view">
                 <tr>
                     <td>Test name</td>
                     <td>actions</td>
@@ -199,7 +215,6 @@ session_start();
                 </tr>
             </table>
 
-            <h3>Existing assignments <button class="btn btn-sm expand-me" data-toggle="existing-assignment-view">expand</button></h3>
             <div id="existing-assignment-view" style="display: none">
                 <div class="columns" style="font-weight: bolder">
                     <div class="column">Student</div>
@@ -247,7 +262,6 @@ session_start();
             </div>
 
 
-            <h3>Create new assignment <button class="btn btn-sm expand-me" data-toggle="new-assignment-view">expand</button></h3>
             <div id="new-assignment-view" style="display: none" class="card">
                 <form method="get" class="card-body" style="border: 1px solid rgba(0,0,0,.6)">
                     <input type="hidden" name="action" value="new_assignment">
@@ -286,15 +300,13 @@ session_start();
                     </div>
                 </form>
             </div>
-            <h3>Students <button class="btn btn-sm expand-me" data-toggle="all-students-view">expand</button></h3>
             <div style="display: none" id="all-students-view">
                 <?php
-                    foreach ($allUsers as $user){
-                        echo '<p>' . $user['userName'] . '</p>';
-                    }
+                foreach ($allUsers as $user) {
+                    echo '<p>' . $user['userName'] . '</p>';
+                }
                 ?>
             </div>
-            <h3>Create new student <button class="btn btn-sm expand-me" data-toggle="create-new-student-view">expand</button></h3>
             <form method="post" action="login.php" style="display:none;" id="create-new-student-view">
                 <input type="hidden" name="signup" value="on">
                 <div class="form-group">
@@ -314,12 +326,32 @@ session_start();
     </div>
 </div>
 <script>
-    document.querySelectorAll('.expand-me').forEach(element =>{
-        element.addEventListener('click',ev =>{
-            let targetElement = document.getElementById(ev.target.dataset.toggle);
-            targetElement.style.display = targetElement.style.display === 'none' ? 'block' : 'none';
+    const tabs = document.querySelectorAll('.tab-item a');
+    console.log(tabs);
+    tabs.forEach(element => {
+        element.addEventListener('click', ev => {
+            openTab(element);
         })
-    })
+    });
+    function openTab(element){
+        disableAll();
+        let targetElement = document.getElementById(element.dataset.toggle);
+        targetElement.style.display = 'block';
+        element.classList.add('active');
+    }
+
+    function disableAll() {
+        // set all to inactive
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+            document.getElementById(tab.dataset.toggle).style.display = 'none';
+        })
+    }
+    if(window.location.hash){
+        let element = document.querySelector('[data-toggle='+window.location.hash.substring(1)+']');
+        openTab(element)
+    }
+
 </script>
 </body>
 </html>
