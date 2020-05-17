@@ -28,7 +28,12 @@ class objDatabaseConnection {
         }
     }
 
-
+    function rawConnection()
+    {
+        $this->connection = new mysqli('localhost',$this->username,$this->password);
+        $this->connection->set_charset("utf8");
+        return $this->connection;
+    }
     function openConnection()
     {
         $this->connection = new mysqli('localhost',$this->username,$this->password,$this->database);
@@ -38,11 +43,7 @@ class objDatabaseConnection {
         if ($this->connection -> connect_errno) {
             //echo "Failed to connect to MySQL: " . $this->$connection -> connect_error;
             $error=$this->connection -> connect_error;
-            $pos = strpos($error, 'Unknown database');
-            if ($pos !== false) {
-                $this->createDB();
-                echo "creating database";
-            }
+
             exit();
         } else {
             //echo "connection successful";

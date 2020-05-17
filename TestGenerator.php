@@ -5,11 +5,13 @@ require 'databasescript.php';
 if(isset($_GET['doInstall'])){
     $DB = new objDatabaseConnection();
     $sql = file_get_contents(__DIR__. '/database.sql');
-    $connection = $DB->openConnection();
-    $password = password_hash('123456', PASSWORD_DEFAULT);
+    $connection = $DB->rawConnection();
+    $password = password_hash($_GET['password'], PASSWORD_DEFAULT);
     $sql .= "\n".'INSERT INTO user SET userName = "admin", is_admin ="1", password = "' . $password .'"';
     $connection->multi_query($sql);
-    die('script ran');
+    $connection->close();
+    echo "<a href='login.php'>Login</a>";
+    die();
 }
 ?>
 <!DOCTYPE html>
@@ -26,16 +28,20 @@ if(isset($_GET['doInstall'])){
 <body>
 <div class="container">
     <h1>Installation</h1>
-    <p>Please delete this file after installation</p>
-    <h3>1. Update your credentials in the file ".env"</h3>
-    <p>Create a database first</p>
-    <textarea class="form-input" >
-        create database if not exists readcomptest;
-    </textarea>
-    <h3>2. Click this button</h3>
-    <a href="?doInstall" class="btn">Install</a>
-    <h3>The script tries to generate an administrator account</h3>
-    <p>user: admin <br>password: 123456</p>
+    <form>
+        <input type="hidden" name="doInstall" value="true">
+        <p>Please delete this file after installation</p>
+        <h3>1. Update your credentials in the file ".env"</h3>
+        <h3>2. The script tries to generate the database & create an administrator account</h3>
+        <p>user: admin</p>
+        <div class="form-group">
+            <label for="pw">admin password (default: 123456)</label>
+            <input class="form-input" type="password" name="password" id="pw" value="123456">
+        </div>
+        <button class="btn">Run installation</button>
+    </form>
+
+
 
 </div>
 </body>

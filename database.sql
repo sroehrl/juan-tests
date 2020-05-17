@@ -1,6 +1,6 @@
-/*create database if not exists readcomptest;
+create database if not exists readcomptest;
 
-use readcomptest;*/
+use readcomptest;
 
 create table if not exists choice
 (

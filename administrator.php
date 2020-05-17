@@ -327,7 +327,6 @@ session_start();
 </div>
 <script>
     const tabs = document.querySelectorAll('.tab-item a');
-    console.log(tabs);
     tabs.forEach(element => {
         element.addEventListener('click', ev => {
             openTab(element);
